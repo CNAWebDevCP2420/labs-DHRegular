@@ -58,23 +58,21 @@
         }
 
     if ($errors == 0) {
-        $DBConnect = @mysql_connect("localhost", "root",
-        "Dg688X29\$great");
+        $DBConnect = mysqli_connect("localhost", "root",
+        "");
         if ($DBConnect === FALSE) {
         echo "<p>Unable to connect to the database
-        server. " .
-        "Error code " . mysql_errno() . ": " .
-        mysql_error() . "</p>\n";
+        server. " . "Error code " . mysqli_connect_errno() . ": " .
+        mysqli_connect_error() . "</p>\n";
         ++$errors;
         }
     else {
         $DBName = "internships";
-        $result = @mysql_select_db($DBName,
-        $DBConnect);
+        $result = mysqli_select_db($DBConnect, $DBName);
         if ($result === FALSE) {
         echo "<p>Unable to select the
         database. " .
-        "Error code " . mysql_errno($DBConnect) . ": " . mysql_error($DBConnect) . "</p>\n";
+        "Error code " . mysqli_connect_errno($DBConnect) . ": " . mysqli_connect_error($DBConnect) . "</p>\n";
         ++$errors;
         }
         }
@@ -84,10 +82,9 @@
     if ($errors == 0) {
     $SQLstring = "SELECT count(*) FROM $TableName" .
     "where email=$email";
-    $QueryResult = @mysql_query($SQLstring,
-    $DBConnect);
+    $QueryResult = mysqli_query($DBConnect, $SQLstring);
     if ($QueryResult !== FALSE) {
-    $Row = mysql_fetch_row($QueryResult);
+    $Row = mysqli_fetch_row($QueryResult);
     if ($Row[0]>0) {
     echo "<p>The email address entered (" .
     htmlentities($email) .
@@ -112,19 +109,18 @@
             " VALUES( '$first', '$last',
             '$email', " .
             " '" . md5($password) . "')";
-            $QueryResult = @mysql_query($SQLstring,
-            $DBConnect);
+            $QueryResult = @mysqli_query($DBConnect, $SQLstring);
             if ($QueryResult === FALSE) {
             echo "<p>Unable to save your registration " .
             " information. Error code " .
-            mysql_errno($DBConnect) . ": " .
-            mysql_error($DBConnect) . "</p>\n";
+            mysqli_connect_errno($DBConnect) . ": " .
+            mysqli_connect_error($DBConnect) . "</p>\n";
             ++$errors;
             }
     else {
-    $InternID = mysql_insert_id($DBConnect);
+    $InternID = mysqli_insert_id($DBConnect);
     }
-    mysql_close($DBConnect);
+    mysqli_close($DBConnect);
 
     if ($errors == 0) {
         $InternName = $first . " " . $last;
@@ -133,6 +129,17 @@
         $InternID . "</strong>.</p>\n";
         }
         }
+    
+    if ($errors == 0) {
+      echo "<form method='post' " .
+      " action='AvailableOpportunities.php'>\n";
+      echo "<input type='hidden' name='internID' " .
+      " value='$InternID'>\n";
+      echo "<input type='submit' name='submit' " .
+      " value='View Available Opportunities'>\n";
+      echo "</form>\n";
+    }
+    
 
   ?>
 </body>
